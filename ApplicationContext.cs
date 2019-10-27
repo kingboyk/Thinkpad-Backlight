@@ -21,7 +21,8 @@ namespace Thinkpad_Backlight
                     new MenuItem(text: "Settings", onClick: ShowConfig),
                     new MenuItem(text: "Exit", onClick: (_, __) => Application.Exit())
                 }),
-                Visible = true
+                Visible = true,
+                Text = "Thinkpad Backlight"
             };
         }
 
