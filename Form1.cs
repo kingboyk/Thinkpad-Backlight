@@ -11,6 +11,7 @@ namespace Thinkpad_Backlight
         public Form1()
         {
             InitializeComponent();
+            Icon = Properties.Resources.TrayIcon;
 
             if (_timerIsEnabled)
             {
