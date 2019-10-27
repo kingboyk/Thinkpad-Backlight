@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Gma.System.MouseKeyHook;
 
 namespace Thinkpad_Backlight
 {
@@ -7,9 +8,11 @@ namespace Thinkpad_Backlight
     {
         private NotifyIcon _trayIcon;
         private readonly Form1 _configWindow = new Form1();
+        private IKeyboardMouseEvents _globalHook;
 
         public ApplicationContext()
         {
+            Subscribe(); // HACK
             // Initialize Tray Icon
             _trayIcon = new NotifyIcon
             {
@@ -36,6 +39,30 @@ namespace Thinkpad_Backlight
             }
         }
 
+        private void Subscribe()
+        {
+            if (_globalHook == null)
+            {
+                // Note: for the application hook, use the Hook.AppEvents() instead
+                _globalHook = Hook.GlobalEvents();
+                _globalHook.KeyPress += GlobalHookKeyPress;
+            }
+        }
+
+        private static void GlobalHookKeyPress(object sender, KeyPressEventArgs e)
+        {
+            Console.WriteLine("KeyPress: \t{0}", e.KeyChar);
+        }
+
+        private void Unsubscribe()
+        {
+            if (_globalHook != null)
+            {
+                _globalHook.KeyPress -= GlobalHookKeyPress;
+                _globalHook.Dispose();
+            }
+        }
+
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ApplicationContext" /> and optionally releases the managed resources.</summary>
         /// <param name="disposing">
         /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.</param>
@@ -46,6 +73,8 @@ namespace Thinkpad_Backlight
                 _trayIcon.Dispose();
                 _trayIcon = null;
             }
+
+            Unsubscribe();
 
             base.Dispose(disposing: disposing);
         }
