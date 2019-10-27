@@ -9,9 +9,11 @@ namespace Thinkpad_Backlight
     {
         private IKeyboardMouseEvents _globalHook;
 
-        public Form1(MenuItem timerMenuItem)
+        public Form1(MenuItem timerMenuItem, MenuItem keypressMenuItem)
         {
             if (timerMenuItem == null) throw new ArgumentNullException(nameof(timerMenuItem));
+            if (keypressMenuItem == null) throw new ArgumentNullException(nameof(keypressMenuItem));
+
             InitializeComponent();
             Icon = Properties.Resources.TrayIcon;
 
@@ -29,6 +31,26 @@ namespace Thinkpad_Backlight
                     Properties.Settings.Default.Timer = true;
                     timer1.Start();
                 }
+
+                Properties.Settings.Default.Save();
+            };
+
+            keypressMenuItem.Click += (sender, args) =>
+            {
+                if (keypressMenuItem.Checked)
+                {
+                    keypressMenuItem.Checked = false;
+                    Properties.Settings.Default.MonitorKeys = false;
+                    UnsubscribeFromKeyDownEvents();
+                }
+                else
+                {
+                    keypressMenuItem.Checked = true;
+                    Properties.Settings.Default.MonitorKeys = true;
+                    SubscribeToKeyDownEvents();
+                }
+
+                Properties.Settings.Default.Save();
             };
 
             if (Properties.Settings.Default.Seconds < 1)
@@ -41,10 +63,10 @@ namespace Thinkpad_Backlight
             }
 
             if (Properties.Settings.Default.MonitorKeys)
-                Subscribe();
+                SubscribeToKeyDownEvents();
         }
 
-        private void Subscribe()
+        private void SubscribeToKeyDownEvents()
         {
             if (_globalHook == null)
             {
@@ -63,7 +85,7 @@ namespace Thinkpad_Backlight
             timer1.Start();
         }
 
-        private void Unsubscribe()
+        private void UnsubscribeFromKeyDownEvents()
         {
             if (_globalHook != null)
             {
@@ -80,7 +102,7 @@ namespace Thinkpad_Backlight
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            Unsubscribe();
+            UnsubscribeFromKeyDownEvents();
 
             // ReSharper disable once UseNullPropagation
             if (disposing && (components != null))
