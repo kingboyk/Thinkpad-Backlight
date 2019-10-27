@@ -15,8 +15,11 @@ namespace Thinkpad_Backlight
                 Icon = Properties.Resources.TrayIcon,
                 ContextMenu = new ContextMenu(menuItems: new[]
                 {
+                    new MenuItem(text: "On: Bright", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Bright)),
+                    new MenuItem(text: "On: Dim", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Dim)),
+                    new MenuItem(text: "Off", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Off)),
                     new MenuItem(text: "Settings", onClick: ShowConfig),
-                    new MenuItem(text: "Exit", onClick: (sender, e) => Application.Exit())
+                    new MenuItem(text: "Exit", onClick: (_, __) => Application.Exit())
                 }),
                 Visible = true
             };
