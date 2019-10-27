@@ -46,5 +46,17 @@ namespace Thinkpad_Backlight.Properties {
                 this["Bright"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MonitorKeys {
+            get {
+                return ((bool)(this["MonitorKeys"]));
+            }
+            set {
+                this["MonitorKeys"] = value;
+            }
+        }
     }
 }

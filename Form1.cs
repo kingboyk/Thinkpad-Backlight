@@ -17,8 +17,10 @@ namespace Thinkpad_Backlight
             {
                 timer1.Interval = Properties.Settings.Default.Seconds * 1000;
                 timer1.Start();
-                Subscribe();
             }
+
+            if (Properties.Settings.Default.MonitorKeys)
+                Subscribe();
         }
 
         private void Subscribe()
