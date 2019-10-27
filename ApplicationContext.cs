@@ -24,6 +24,8 @@ namespace Thinkpad_Backlight
                 Visible = true,
                 Text = "Thinkpad Backlight"
             };
+
+            _trayIcon.DoubleClick += ShowConfig;
         }
 
         private void ShowConfig(object sender, EventArgs e)
