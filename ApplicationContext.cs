@@ -1,10 +1,12 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace Thinkpad_Backlight
 {
     public class ApplicationContext : System.Windows.Forms.ApplicationContext
     {
         private NotifyIcon _trayIcon;
+        private readonly Form1 _configWindow = new Form1();
 
         public ApplicationContext()
         {
@@ -14,10 +16,24 @@ namespace Thinkpad_Backlight
                 Icon = Properties.Resources.TrayIcon,
                 ContextMenu = new ContextMenu(menuItems: new[]
                 {
+                    new MenuItem(text: "Settings", onClick: ShowConfig),
                     new MenuItem(text: "Exit", onClick: (sender, e) => Application.Exit())
                 }),
                 Visible = true
             };
+        }
+
+        private void ShowConfig(object sender, EventArgs e)
+        {
+            // If we are already showing the window, merely focus it.
+            if (_configWindow.Visible)
+            {
+                _configWindow.Activate();
+            }
+            else
+            {
+                _configWindow.ShowDialog();
+            }
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ApplicationContext" /> and optionally releases the managed resources.</summary>
