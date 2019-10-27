@@ -1,19 +1,40 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Configuration;
+using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
 
 namespace Thinkpad_Backlight
 {
-    public partial class Form1 : Form
+    internal partial class Form1 : Form
     {
-        private readonly bool _timerIsEnabled = Properties.Settings.Default.Seconds > 0; // Where 0 is timer off
         private IKeyboardMouseEvents _globalHook;
 
-        public Form1()
+        public Form1(MenuItem timerMenuItem)
         {
+            if (timerMenuItem == null) throw new ArgumentNullException(nameof(timerMenuItem));
             InitializeComponent();
             Icon = Properties.Resources.TrayIcon;
 
-            if (_timerIsEnabled)
+            timerMenuItem.Click += (sender, args) =>
+            {
+                if (timerMenuItem.Checked)
+                {
+                    timerMenuItem.Checked = false;
+                    Properties.Settings.Default.Timer = false;
+                    timer1.Stop();
+                }
+                else
+                {
+                    timerMenuItem.Checked = true;
+                    Properties.Settings.Default.Timer = true;
+                    timer1.Start();
+                }
+            };
+
+            if (Properties.Settings.Default.Seconds < 1)
+                throw new ConfigurationErrorsException("The seconds setting must be 1 or more");
+
+            if (Properties.Settings.Default.Timer)
             {
                 timer1.Interval = Properties.Settings.Default.Seconds * 1000;
                 timer1.Start();
@@ -51,7 +72,7 @@ namespace Thinkpad_Backlight
             }
         }
 
-        private void Timer1Tick(object sender, System.EventArgs e) => KeyboardController.ToggleBacklight(KeyboardBrightness.Off);
+        private void Timer1Tick(object sender, EventArgs e) => KeyboardController.ToggleBacklight(KeyboardBrightness.Off);
 
         /// <summary>
         /// Clean up any resources being used.

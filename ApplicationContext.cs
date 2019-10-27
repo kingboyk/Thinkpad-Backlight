@@ -6,10 +6,12 @@ namespace Thinkpad_Backlight
     public class ApplicationContext : System.Windows.Forms.ApplicationContext
     {
         private NotifyIcon _trayIcon;
-        private readonly Form1 _configWindow = new Form1();
+        private readonly Form1 _configWindow;
 
         public ApplicationContext()
         {
+            var timerMenuItem = new MenuItem(text: "Timer") { Checked = Properties.Settings.Default.Timer };
+
             _trayIcon = new NotifyIcon
             {
                 Icon = Properties.Resources.TrayIcon,
@@ -18,14 +20,18 @@ namespace Thinkpad_Backlight
                     new MenuItem(text: "On: Bright", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Bright)),
                     new MenuItem(text: "On: Dim", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Dim)),
                     new MenuItem(text: "Off", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Off)),
+                    timerMenuItem,
                     new MenuItem(text: "Settings", onClick: ShowConfig),
                     new MenuItem(text: "Exit", onClick: (_, __) => Application.Exit())
                 }),
-                Visible = true,
+                Visible = false,
                 Text = "Thinkpad Backlight"
             };
 
             _trayIcon.DoubleClick += ShowConfig;
+
+            _configWindow = new Form1(timerMenuItem);
+            _trayIcon.Visible = true;
         }
 
         private void ShowConfig(object sender, EventArgs e)

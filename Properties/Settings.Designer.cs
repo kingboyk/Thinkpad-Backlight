@@ -58,5 +58,17 @@ namespace Thinkpad_Backlight.Properties {
                 this["MonitorKeys"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Timer {
+            get {
+                return ((bool)(this["Timer"]));
+            }
+            set {
+                this["Timer"] = value;
+            }
+        }
     }
 }
