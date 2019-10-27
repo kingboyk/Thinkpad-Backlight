@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
 
@@ -46,7 +47,19 @@ namespace Thinkpad_Backlight
                 // Note: for the application hook, use the Hook.AppEvents() instead
                 _globalHook = Hook.GlobalEvents();
                 _globalHook.KeyPress += GlobalHookKeyPress;
+                _globalHook.KeyDown += GlobalHookOnKeyDown;
+
+                Hook.GlobalEvents().OnCombination(new Dictionary<Combination, Action>
+                {
+                    { Combination.TriggeredBy(Keys.Control), () => { Console.WriteLine("You Pressed CTL"); }},
+                    { Combination.TriggeredBy(Keys.E), () => { Console.WriteLine("You Pressed e"); }}
+                });
             }
+        }
+
+        private static void GlobalHookOnKeyDown(object sender, KeyEventArgs e)
+        {
+            Console.WriteLine("KeyDown: \t{0}", e.KeyCode);
         }
 
         private static void GlobalHookKeyPress(object sender, KeyPressEventArgs e)
@@ -59,6 +72,7 @@ namespace Thinkpad_Backlight
             if (_globalHook != null)
             {
                 _globalHook.KeyPress -= GlobalHookKeyPress;
+                _globalHook.KeyDown -= GlobalHookOnKeyDown;
                 _globalHook.Dispose();
             }
         }
