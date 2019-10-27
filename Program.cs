@@ -12,10 +12,10 @@ namespace Thinkpad_Backlight
         private static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            new Keyboard_Core.KeyboardControl().SetKeyboardBackLightStatus(0);
-            MessageBox.Show(SystemInformation.TerminalServerSession.ToString(), "Is RDC?");
-            //Application.Run(new Form1());
+            Application.SetCompatibleTextRenderingDefault(defaultValue: false);
+            new Keyboard_Core.KeyboardControl().SetKeyboardBackLightStatus(nStatus: 0);
+            //MessageBox.Show(SystemInformation.TerminalServerSession.ToString(), "Is RDC?");
+            Application.Run(context: new ApplicationContext());
         }
     }
 }
