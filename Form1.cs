@@ -78,7 +78,7 @@ namespace Thinkpad_Backlight
 
         private void GlobalHookOnKeyDown(object sender, KeyEventArgs e)
         {
-            if (!SystemInformation.TerminalServerSession)
+            if (e.KeyCode != Keys.None /* issue 1 */ && !SystemInformation.TerminalServerSession)
                 KeyboardController.ToggleBacklight(Properties.Settings.Default.Bright ? 2 : 1);
 
             timer1.Stop();
