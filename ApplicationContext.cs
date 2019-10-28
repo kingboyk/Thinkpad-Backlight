@@ -10,16 +10,18 @@ namespace Thinkpad_Backlight
 
         public ApplicationContext()
         {
-            var timerMenuItem = new MenuItem(text: "Timer") { Checked = Properties.Settings.Default.Timer };
-            var keypressMenuItem = new MenuItem(text: "Monitor key presses") { Checked = Properties.Settings.Default.MonitorKeys };
+            var brightMenuItem = new MenuItem("On: Bright");
+            var dimMenuItem = new MenuItem("On: Dim");
+            var timerMenuItem = new MenuItem("Timer") { Checked = Properties.Settings.Default.Timer };
+            var keypressMenuItem = new MenuItem("Monitor key presses") { Checked = Properties.Settings.Default.MonitorKeys };
 
             _trayIcon = new NotifyIcon
             {
                 Icon = Properties.Resources.TrayIcon,
                 ContextMenu = new ContextMenu(menuItems: new[]
                 {
-                    new MenuItem(text: "On: Bright", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Bright)),
-                    new MenuItem(text: "On: Dim", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Dim)),
+                    brightMenuItem,
+                    dimMenuItem,
                     new MenuItem(text: "Off", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Off)),
                     timerMenuItem,
                     keypressMenuItem,
@@ -33,7 +35,7 @@ namespace Thinkpad_Backlight
 
             _trayIcon.DoubleClick += ShowConfig;
 
-            _configWindow = new Form1(timerMenuItem, keypressMenuItem);
+            _configWindow = new Form1(brightMenuItem, dimMenuItem, timerMenuItem, keypressMenuItem);
             _trayIcon.Visible = true;
         }
 

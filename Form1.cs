@@ -9,13 +9,27 @@ namespace Thinkpad_Backlight
     {
         private IKeyboardMouseEvents _globalHook;
 
-        public Form1(MenuItem timerMenuItem, MenuItem keypressMenuItem)
+        public Form1(MenuItem brightMenuItem, MenuItem dimMenuItem, MenuItem timerMenuItem, MenuItem keypressMenuItem)
         {
+            if (brightMenuItem == null) throw new ArgumentNullException(nameof(brightMenuItem));
+            if (dimMenuItem == null) throw new ArgumentNullException(nameof(dimMenuItem));
             if (timerMenuItem == null) throw new ArgumentNullException(nameof(timerMenuItem));
             if (keypressMenuItem == null) throw new ArgumentNullException(nameof(keypressMenuItem));
 
             InitializeComponent();
             Icon = Properties.Resources.TrayIcon;
+
+            brightMenuItem.Click += (sender, args) =>
+            {
+                timer1.Reset();
+                KeyboardController.ToggleBacklight(KeyboardBrightness.Bright);
+            };
+
+            dimMenuItem.Click += (sender, args) =>
+            {
+                timer1.Reset();
+                KeyboardController.ToggleBacklight(KeyboardBrightness.Dim);
+            };
 
             timerMenuItem.Click += (sender, args) =>
             {
@@ -81,8 +95,10 @@ namespace Thinkpad_Backlight
             if (e.KeyCode != Keys.None /* issue 1 */ && !SystemInformation.TerminalServerSession)
                 KeyboardController.ToggleBacklight(Properties.Settings.Default.Bright ? 2 : 1);
 
-            timer1.Stop();
-            timer1.Start();
+            if (Properties.Settings.Default.Timer)
+            {
+                timer1.Reset();
+            }
         }
 
         private void UnsubscribeFromKeyDownEvents()
