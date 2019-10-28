@@ -70,5 +70,17 @@ namespace Thinkpad_Backlight.Properties {
                 this["Timer"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool EnableAtStartup {
+            get {
+                return ((bool)(this["EnableAtStartup"]));
+            }
+            set {
+                this["EnableAtStartup"] = value;
+            }
+        }
     }
 }

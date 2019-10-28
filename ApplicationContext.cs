@@ -10,6 +10,9 @@ namespace Thinkpad_Backlight
 
         public ApplicationContext()
         {
+            if (Properties.Settings.Default.EnableAtStartup)
+                KeyboardController.ToggleBacklight(allowInTerminalServerSession: false);
+
             var brightMenuItem = new MenuItem("On: Bright");
             var dimMenuItem = new MenuItem("On: Dim");
             var timerMenuItem = new MenuItem("Timer") { Checked = Properties.Settings.Default.Timer };
