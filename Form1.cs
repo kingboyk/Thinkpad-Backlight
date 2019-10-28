@@ -92,7 +92,7 @@ namespace Thinkpad_Backlight
 
         private void GlobalHookOnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode != Keys.None /* issue 1 */ && !SystemInformation.TerminalServerSession)
+            if (e.KeyCode != Keys.None /* issue 1 */ && !SystemInformation.TerminalServerSession /* Don't turn backlight on automatically if connected to the machine over RDC */)
                 KeyboardController.ToggleBacklight(Properties.Settings.Default.Bright ? 2 : 1);
 
             if (Properties.Settings.Default.Timer)
