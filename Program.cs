@@ -31,6 +31,9 @@ namespace Thinkpad_Backlight
         [STAThread]
         private static void Main()
         {
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) => HandleUnhandledException(args.ExceptionObject as Exception);
+            Application.ThreadException += (sender, args) => HandleUnhandledException(args.Exception);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(defaultValue: false);
 
@@ -46,6 +49,16 @@ namespace Thinkpad_Backlight
             }
 
             Application.Run(context);
+        }
+
+        private static void HandleUnhandledException(Exception ex)
+        {
+            MessageBox.Show($@"There was an error and the program will now exit.
+
+Error message: {ex.Message}
+
+Stack trace: {ex.StackTrace}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Application.Exit();
         }
     }
 }
