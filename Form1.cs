@@ -9,14 +9,16 @@ namespace Thinkpad_Backlight
     internal partial class Form1 : Form
     {
         private IKeyboardMouseEvents _globalHook;
+        private readonly MenuItem _timerMenuItem;
+        private readonly MenuItem _keypressMenuItem;
         private readonly KeyboardController _keyboardController;
 
         public Form1(MenuItem brightMenuItem, MenuItem dimMenuItem, MenuItem timerMenuItem, MenuItem keypressMenuItem, KeyboardController keyboardController)
         {
             if (brightMenuItem == null) throw new ArgumentNullException(nameof(brightMenuItem));
             if (dimMenuItem == null) throw new ArgumentNullException(nameof(dimMenuItem));
-            if (timerMenuItem == null) throw new ArgumentNullException(nameof(timerMenuItem));
-            if (keypressMenuItem == null) throw new ArgumentNullException(nameof(keypressMenuItem));
+            _timerMenuItem = timerMenuItem ?? throw new ArgumentNullException(nameof(timerMenuItem));
+            _keypressMenuItem = keypressMenuItem ?? throw new ArgumentNullException(nameof(keypressMenuItem));
             _keyboardController = keyboardController ?? throw new ArgumentNullException(nameof(keyboardController));
 
             InitializeComponent();
@@ -150,6 +152,28 @@ namespace Thinkpad_Backlight
         }
 
         private void Timer1Tick(object sender, EventArgs e) => _keyboardController.ToggleBacklight(KeyboardBrightness.Off);
+
+        private void Form1FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _keypressMenuItem.Enabled = true;
+            _timerMenuItem.Enabled = true;
+        }
+
+        internal void ShowConfig(object sender, EventArgs e)
+        {
+            _keypressMenuItem.Enabled = false;
+            _timerMenuItem.Enabled = false;
+
+            // If we are already showing the window, merely focus it.
+            if (Visible)
+            {
+                Activate();
+            }
+            else
+            {
+                ShowDialog();
+            }
+        }
 
         /// <summary>
         /// Clean up any resources being used.

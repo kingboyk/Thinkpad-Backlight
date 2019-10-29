@@ -7,7 +7,6 @@ namespace Thinkpad_Backlight
     public class ApplicationContext : System.Windows.Forms.ApplicationContext
     {
         private NotifyIcon _trayIcon;
-        private readonly Form1 _configWindow;
 
         public ApplicationContext()
         {
@@ -20,6 +19,7 @@ namespace Thinkpad_Backlight
             var dimMenuItem = new MenuItem("On: Dim");
             var timerMenuItem = new MenuItem("Timer") { Checked = Settings.Default.Timer };
             var keypressMenuItem = new MenuItem("Monitor key presses") { Checked = Settings.Default.MonitorKeys };
+            var settingsMenuItem = new MenuItem(text: "Settings") /* { BarBreak = true }*/;
 
             _trayIcon = new NotifyIcon
             {
@@ -32,30 +32,18 @@ namespace Thinkpad_Backlight
                     timerMenuItem,
                     keypressMenuItem,
                     new MenuItem("-"), // or use BarBreak instead, on the next item, to seperate vertically
-                    new MenuItem(text: "Settings", onClick: ShowConfig)/* { BarBreak = true }*/,
+                    settingsMenuItem,
                     new MenuItem(text: "Exit", onClick: (_, __) => Application.Exit())
                 }),
                 Visible = false,
                 Text = "Thinkpad Backlight"
             };
 
-            _trayIcon.DoubleClick += ShowConfig;
+            var configWindow = new Form1(brightMenuItem, dimMenuItem, timerMenuItem, keypressMenuItem, keyboardController);
 
-            _configWindow = new Form1(brightMenuItem, dimMenuItem, timerMenuItem, keypressMenuItem, keyboardController);
+            _trayIcon.DoubleClick += configWindow.ShowConfig;
+            settingsMenuItem.Click += configWindow.ShowConfig;
             _trayIcon.Visible = true;
-        }
-
-        private void ShowConfig(object sender, EventArgs e)
-        {
-            // If we are already showing the window, merely focus it.
-            if (_configWindow.Visible)
-            {
-                _configWindow.Activate();
-            }
-            else
-            {
-                _configWindow.ShowDialog();
-            }
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ApplicationContext" /> and optionally releases the managed resources.</summary>
