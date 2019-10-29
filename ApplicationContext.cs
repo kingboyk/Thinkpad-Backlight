@@ -11,8 +11,10 @@ namespace Thinkpad_Backlight
 
         public ApplicationContext()
         {
+            var keyboardController = new KeyboardController();
+
             if (Settings.Default.EnableAtStartup)
-                KeyboardController.ToggleBacklight(allowInTerminalServerSession: false);
+                keyboardController.ToggleBacklight(allowInTerminalServerSession: false);
 
             var brightMenuItem = new MenuItem("On: Bright");
             var dimMenuItem = new MenuItem("On: Dim");
@@ -26,7 +28,7 @@ namespace Thinkpad_Backlight
                 {
                     brightMenuItem,
                     dimMenuItem,
-                    new MenuItem(text: "Off", onClick: (_, __) => KeyboardController.ToggleBacklight(KeyboardBrightness.Off)),
+                    new MenuItem(text: "Off", onClick: (_, __) => keyboardController.ToggleBacklight(KeyboardBrightness.Off)),
                     timerMenuItem,
                     keypressMenuItem,
                     new MenuItem("-"), // or use BarBreak instead, on the next item, to seperate vertically
@@ -39,7 +41,7 @@ namespace Thinkpad_Backlight
 
             _trayIcon.DoubleClick += ShowConfig;
 
-            _configWindow = new Form1(brightMenuItem, dimMenuItem, timerMenuItem, keypressMenuItem);
+            _configWindow = new Form1(brightMenuItem, dimMenuItem, timerMenuItem, keypressMenuItem, keyboardController);
             _trayIcon.Visible = true;
         }
 

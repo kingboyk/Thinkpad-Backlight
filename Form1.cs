@@ -9,13 +9,15 @@ namespace Thinkpad_Backlight
     internal partial class Form1 : Form
     {
         private IKeyboardMouseEvents _globalHook;
+        private readonly KeyboardController _keyboardController;
 
-        public Form1(MenuItem brightMenuItem, MenuItem dimMenuItem, MenuItem timerMenuItem, MenuItem keypressMenuItem)
+        public Form1(MenuItem brightMenuItem, MenuItem dimMenuItem, MenuItem timerMenuItem, MenuItem keypressMenuItem, KeyboardController keyboardController)
         {
             if (brightMenuItem == null) throw new ArgumentNullException(nameof(brightMenuItem));
             if (dimMenuItem == null) throw new ArgumentNullException(nameof(dimMenuItem));
             if (timerMenuItem == null) throw new ArgumentNullException(nameof(timerMenuItem));
             if (keypressMenuItem == null) throw new ArgumentNullException(nameof(keypressMenuItem));
+            _keyboardController = keyboardController ?? throw new ArgumentNullException(nameof(keyboardController));
 
             InitializeComponent();
             Icon = Properties.Resources.TrayIcon;
@@ -23,13 +25,13 @@ namespace Thinkpad_Backlight
             brightMenuItem.Click += (sender, args) =>
             {
                 timer1.Reset();
-                KeyboardController.ToggleBacklight(KeyboardBrightness.Bright);
+                _keyboardController.ToggleBacklight(KeyboardBrightness.Bright);
             };
 
             dimMenuItem.Click += (sender, args) =>
             {
                 timer1.Reset();
-                KeyboardController.ToggleBacklight(KeyboardBrightness.Dim);
+                _keyboardController.ToggleBacklight(KeyboardBrightness.Dim);
             };
 
             timerMenuItem.Click += TimerMenuItemOnClick;
@@ -130,7 +132,7 @@ namespace Thinkpad_Backlight
         private void GlobalHookOnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.None /* issue 1 */)
-                KeyboardController.ToggleBacklight(allowInTerminalServerSession: false);
+                _keyboardController.ToggleBacklight(allowInTerminalServerSession: false);
 
             if (Settings.Default.Timer)
             {
@@ -147,7 +149,7 @@ namespace Thinkpad_Backlight
             }
         }
 
-        private void Timer1Tick(object sender, EventArgs e) => KeyboardController.ToggleBacklight(KeyboardBrightness.Off);
+        private void Timer1Tick(object sender, EventArgs e) => _keyboardController.ToggleBacklight(KeyboardBrightness.Off);
 
         /// <summary>
         /// Clean up any resources being used.

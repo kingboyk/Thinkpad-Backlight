@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Thinkpad_Backlight
@@ -13,7 +14,19 @@ namespace Thinkpad_Backlight
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(defaultValue: false);
-            Application.Run(context: new ApplicationContext());
+
+            ApplicationContext context;
+            try
+            {
+                context = new ApplicationContext();
+            }
+            catch (FileNotFoundException)
+            {
+                Application.Exit();
+                return;
+            }
+
+            Application.Run(context);
         }
     }
 }
