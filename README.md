@@ -7,5 +7,10 @@ This utility requires the Lenovo files `Keyboard_Core.dll` and `Contract_Keyboar
 			
 If you don't have this folder, either a) ensure you have the Lenovo utilities installed or b) panic.
 			
+# Usage
+This utility adds a system tray icon. Double click the icon to open the settings, or right click for a menu.
+
+![Settings](Settings.png)
+
 # Build instructions
 The project targets .NET 4.8 so you will need the .NET 4.8 Targetting Pack installed, or you can downgrade the target to an older framework.
