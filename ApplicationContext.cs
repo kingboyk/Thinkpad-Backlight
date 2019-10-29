@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Settings = Thinkpad_Backlight.Properties.Settings;
 
 namespace Thinkpad_Backlight
 {
@@ -10,13 +11,13 @@ namespace Thinkpad_Backlight
 
         public ApplicationContext()
         {
-            if (Properties.Settings.Default.EnableAtStartup)
+            if (Settings.Default.EnableAtStartup)
                 KeyboardController.ToggleBacklight(allowInTerminalServerSession: false);
 
             var brightMenuItem = new MenuItem("On: Bright");
             var dimMenuItem = new MenuItem("On: Dim");
-            var timerMenuItem = new MenuItem("Timer") { Checked = Properties.Settings.Default.Timer };
-            var keypressMenuItem = new MenuItem("Monitor key presses") { Checked = Properties.Settings.Default.MonitorKeys };
+            var timerMenuItem = new MenuItem("Timer") { Checked = Settings.Default.Timer };
+            var keypressMenuItem = new MenuItem("Monitor key presses") { Checked = Settings.Default.MonitorKeys };
 
             _trayIcon = new NotifyIcon
             {

@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
+using Settings = Thinkpad_Backlight.Properties.Settings;
 
 namespace Thinkpad_Backlight
 {
@@ -31,53 +32,89 @@ namespace Thinkpad_Backlight
                 KeyboardController.ToggleBacklight(KeyboardBrightness.Dim);
             };
 
-            timerMenuItem.Click += (sender, args) =>
+            timerMenuItem.Click += TimerMenuItemOnClick;
+
+            keypressMenuItem.Click += KeypressMenuItemOnClick;
+
+            if (Settings.Default.Seconds < 1)
+                throw new ConfigurationErrorsException("The seconds setting must be 1 or more");
+
+            if (Settings.Default.Timer)
+            {
+                timer1.Interval = Settings.Default.Seconds * 1000;
+                timer1.Start();
+            }
+
+            if (Settings.Default.MonitorKeys)
+                SubscribeToKeyDownEvents();
+
+            BrightnessComboBox.SelectedIndex = Settings.Default.Bright ? 1 : 0;
+            BrightnessComboBox.SelectedIndexChanged += (sender, args) => 
+            {
+                Settings.Default.Bright = BrightnessComboBox.SelectedIndex == 1;
+                Settings.Default.Save();
+            };
+
+            OnStartupCheckBox.Checked = Settings.Default.EnableAtStartup;
+            OnStartupCheckBox.CheckedChanged += (sender, args) =>
+            {
+                Settings.Default.EnableAtStartup = OnStartupCheckBox.Checked;
+                Settings.Default.Save();
+            };
+
+            OnKeyPressCheckBox.Checked = Settings.Default.MonitorKeys;
+            OnKeyPressCheckBox.CheckedChanged += KeypressMenuItemOnClick;
+
+            TimerCheckBox.Checked = Settings.Default.Timer;
+            TimerCheckBox.CheckedChanged += TimerMenuItemOnClick;
+
+            SecondsNumeric.Maximum = ushort.MaxValue;
+            SecondsNumeric.Value = Settings.Default.Seconds;
+            SecondsDisplayLabel.Text = $"({SecondsNumeric.Value})";
+            SecondsNumeric.ValueChanged += (sender, args) => 
+            {
+                ushort seconds = (ushort)SecondsNumeric.Value;
+                SecondsDisplayLabel.Text = $"({seconds})";
+                timer1.Interval = seconds * 1000;
+                Settings.Default.Seconds = seconds;
+                Settings.Default.Save();
+            };
+
+            void TimerMenuItemOnClick(object sender, EventArgs args)
             {
                 if (timerMenuItem.Checked)
                 {
                     timerMenuItem.Checked = false;
-                    Properties.Settings.Default.Timer = false;
+                    Settings.Default.Timer = false;
                     timer1.Stop();
                 }
                 else
                 {
                     timerMenuItem.Checked = true;
-                    Properties.Settings.Default.Timer = true;
+                    Settings.Default.Timer = true;
                     timer1.Start();
                 }
 
-                Properties.Settings.Default.Save();
-            };
+                Settings.Default.Save();
+            }
 
-            keypressMenuItem.Click += (sender, args) =>
+            void KeypressMenuItemOnClick(object sender, EventArgs args)
             {
                 if (keypressMenuItem.Checked)
                 {
                     keypressMenuItem.Checked = false;
-                    Properties.Settings.Default.MonitorKeys = false;
+                    Settings.Default.MonitorKeys = false;
                     UnsubscribeFromKeyDownEvents();
                 }
                 else
                 {
                     keypressMenuItem.Checked = true;
-                    Properties.Settings.Default.MonitorKeys = true;
+                    Settings.Default.MonitorKeys = true;
                     SubscribeToKeyDownEvents();
                 }
 
-                Properties.Settings.Default.Save();
-            };
-
-            if (Properties.Settings.Default.Seconds < 1)
-                throw new ConfigurationErrorsException("The seconds setting must be 1 or more");
-
-            if (Properties.Settings.Default.Timer)
-            {
-                timer1.Interval = Properties.Settings.Default.Seconds * 1000;
-                timer1.Start();
+                Settings.Default.Save();
             }
-
-            if (Properties.Settings.Default.MonitorKeys)
-                SubscribeToKeyDownEvents();
         }
 
         private void SubscribeToKeyDownEvents()
@@ -95,7 +132,7 @@ namespace Thinkpad_Backlight
             if (e.KeyCode != Keys.None /* issue 1 */)
                 KeyboardController.ToggleBacklight(allowInTerminalServerSession: false);
 
-            if (Properties.Settings.Default.Timer)
+            if (Settings.Default.Timer)
             {
                 timer1.Reset();
             }

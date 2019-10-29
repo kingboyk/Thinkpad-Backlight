@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Keyboard_Core;
+using Settings = Thinkpad_Backlight.Properties.Settings;
 
 namespace Thinkpad_Backlight
 {
@@ -24,7 +25,7 @@ namespace Thinkpad_Backlight
         internal static void ToggleBacklight(bool allowInTerminalServerSession)
         {
             if (allowInTerminalServerSession || !SystemInformation.TerminalServerSession /* Don't turn backlight on automatically if connected to the machine over RDC */)
-                ToggleBacklight(Properties.Settings.Default.Bright ? 2 : 1);
+                ToggleBacklight(Settings.Default.Bright ? 2 : 1);
         }
 
         private static void ToggleBacklight(int level)
