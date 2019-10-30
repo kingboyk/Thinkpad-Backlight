@@ -46,7 +46,7 @@ namespace Thinkpad_Backlight
                 {
                     brightMenuItem,
                     dimMenuItem,
-                    new MenuItem(text: "Off", onClick: (_, __) => keyboardController.ToggleBacklight(KeyboardBrightness.Off)),
+                    new MenuItem(text: "Off", onClick: (_, __) => keyboardController.ToggleBacklight(KeyboardBrightness.Off, allowInTerminalServerSession: true)),
                     timerMenuItem,
                     keypressMenuItem,
                     new MenuItem("-"), // or use BarBreak instead, on the next item, to seperate vertically

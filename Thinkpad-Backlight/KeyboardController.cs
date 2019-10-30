@@ -78,7 +78,7 @@ namespace Thinkpad_Backlight
             }
         }
 
-        public void ToggleBacklight(KeyboardBrightness brightness)
+        public void ToggleBacklight(KeyboardBrightness brightness, bool allowInTerminalServerSession)
         {
             int level = brightness switch
             {
@@ -88,21 +88,23 @@ namespace Thinkpad_Backlight
                 _ =>  throw new ArgumentOutOfRangeException(nameof(brightness))
             };
 
-            ToggleBacklight(level);
+            ToggleBacklight(level, allowInTerminalServerSession);
         }
 
         internal void ToggleBacklight(bool allowInTerminalServerSession)
         {
-            if (allowInTerminalServerSession || !SystemInformation.TerminalServerSession /* Don't turn backlight on automatically if connected to the machine over RDC */)
-                ToggleBacklight(Settings.Default.Bright ? 2 : 1);
+                ToggleBacklight(Settings.Default.Bright ? 2 : 1, allowInTerminalServerSession);
         }
 
-        private void ToggleBacklight(int level)
+        private void ToggleBacklight(int level, bool allowInTerminalServerSession)
         {
-            _getKeyboardBackLightStatusFunc(out int currentLevel);
+            if (allowInTerminalServerSession || !SystemInformation.TerminalServerSession /* Don't turn backlight on automatically if connected to the machine over RDC */)
+            {
+                _getKeyboardBackLightStatusFunc(out int currentLevel);
 
-            if (level != currentLevel)
-                _setKeyboardBackLightStatusFunc(level);
+                if (level != currentLevel)
+                    _setKeyboardBackLightStatusFunc(level);
+            }
         }
 
         private static Assembly AssemblyResolve(object sender, ResolveEventArgs args) // https://stackoverflow.com/a/15350751/397817
