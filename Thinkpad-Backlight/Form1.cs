@@ -46,7 +46,8 @@ namespace Thinkpad_Backlight
             brightMenuItem.Click += (sender, args) =>
             {
                 timer1.Reset();
-                _keyboardController.ToggleBacklight(KeyboardBrightness.Bright, allowInTerminalServerSession: true);
+                var r = _keyboardController.ToggleBacklight(KeyboardBrightness.Bright, allowInTerminalServerSession: true);
+                MessageBox.Show(keyboardController.AnalyseResult(r));
             };
 
             dimMenuItem.Click += (sender, args) =>
@@ -170,7 +171,11 @@ namespace Thinkpad_Backlight
             }
         }
 
-        private void Timer1Tick(object sender, EventArgs e) => _keyboardController.ToggleBacklight(KeyboardBrightness.Off, allowInTerminalServerSession: true);
+        private void Timer1Tick(object sender, EventArgs e)
+        {
+            var r = _keyboardController.ToggleBacklight(KeyboardBrightness.Off, allowInTerminalServerSession: true);
+            MessageBox.Show($"Timer: {_keyboardController.AnalyseResult(r)}");
+        }
 
         private void Form1FormClosed(object sender, FormClosedEventArgs e)
         {

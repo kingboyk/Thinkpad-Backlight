@@ -78,7 +78,7 @@ namespace Thinkpad_Backlight
             }
         }
 
-        public void ToggleBacklight(KeyboardBrightness brightness, bool allowInTerminalServerSession)
+        public (uint getKeyboardBackLightStatusSuccess, uint? setKeyboardBackLightStatusSuccess)? ToggleBacklight(KeyboardBrightness brightness, bool allowInTerminalServerSession)
         {
             int level = brightness switch
             {
@@ -88,22 +88,45 @@ namespace Thinkpad_Backlight
                 _ =>  throw new ArgumentOutOfRangeException(nameof(brightness))
             };
 
-            ToggleBacklight(level, allowInTerminalServerSession);
+            return ToggleBacklight(level, allowInTerminalServerSession);
         }
 
-        internal void ToggleBacklight(bool allowInTerminalServerSession)
+        internal (uint getKeyboardBackLightStatusSuccess, uint? setKeyboardBackLightStatusSuccess)? ToggleBacklight(bool allowInTerminalServerSession)
         {
-                ToggleBacklight(Settings.Default.Bright ? 2 : 1, allowInTerminalServerSession);
+            return ToggleBacklight(Settings.Default.Bright ? 2 : 1, allowInTerminalServerSession);
         }
 
-        private void ToggleBacklight(int level, bool allowInTerminalServerSession)
+        private (uint getKeyboardBackLightStatusSuccess, uint? setKeyboardBackLightStatusSuccess)? ToggleBacklight(int level, bool allowInTerminalServerSession)
         {
-            if (allowInTerminalServerSession || !SystemInformation.TerminalServerSession /* Don't turn backlight on automatically if connected to the machine over RDC */)
+            if (!allowInTerminalServerSession && SystemInformation.TerminalServerSession)
             {
-                _getKeyboardBackLightStatusFunc(out int currentLevel);
+                return null; /* Don't turn backlight on automatically if connected to the machine over RDC */
+            }
+            else
+            {
+                uint getKeyboardBackLightStatusSuccess = _getKeyboardBackLightStatusFunc(out int currentLevel);
+                uint? setKeyboardBackLightStatusSuccess = level == currentLevel ? null : (uint?)_setKeyboardBackLightStatusFunc(level);
 
-                if (level != currentLevel)
-                    _setKeyboardBackLightStatusFunc(level);
+                return (getKeyboardBackLightStatusSuccess, setKeyboardBackLightStatusSuccess);
+            }
+        }
+
+        internal string AnalyseResult((uint getKeyboardBackLightStatusSuccess, uint? setKeyboardBackLightStatusSuccess)? result)
+        {
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (result == null)
+            {
+                return $"No commands sent (TerminalServerSession: {SystemInformation.TerminalServerSession})";
+            }
+            else
+            {
+                string setKeyboardBackLightStatusSuccessString = result.Value.setKeyboardBackLightStatusSuccess switch {
+                    null => "Command not sent",
+                    0 => "OK",
+                    _ => "Error?"
+                };
+
+                return $"getKeyboardBackLightStatusSuccess: {result.Value.getKeyboardBackLightStatusSuccess} ({(result.Value.getKeyboardBackLightStatusSuccess == 0 ? "OK" : "Error?")}); setKeyboardBackLightStatusSuccess: {result.Value.setKeyboardBackLightStatusSuccess} ({setKeyboardBackLightStatusSuccessString})";
             }
         }
 
