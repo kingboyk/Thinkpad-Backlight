@@ -21,6 +21,7 @@ using System;
 using System.Configuration;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
+using Microsoft.Win32;
 using Settings = Thinkpad_Backlight.Properties.Settings;
 
 namespace Thinkpad_Backlight
@@ -61,6 +62,8 @@ namespace Thinkpad_Backlight
 
             if (Settings.Default.Seconds < 1)
                 throw new ConfigurationErrorsException("The seconds setting must be 1 or more");
+
+            SystemEvents.PowerModeChanged += SystemEventsOnPowerModeChanged;
 
             if (Settings.Default.Timer)
             {
@@ -141,6 +144,23 @@ namespace Thinkpad_Backlight
             }
         }
 
+        private void SystemEventsOnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+            switch (e.Mode)
+            {
+                case PowerModes.Suspend:
+                    timer1.Stop();
+                    break;
+
+                case PowerModes.Resume:
+                    if (Settings.Default.EnableAtStartup)
+                        _keyboardController.ToggleBacklight(allowInTerminalServerSession: false);
+                    timer1.Reset();
+                    break;
+            }
+        }
+
         private void SubscribeToKeyDownEvents()
         {
             if (_globalHook == null)
@@ -198,6 +218,7 @@ namespace Thinkpad_Backlight
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            SystemEvents.PowerModeChanged -= SystemEventsOnPowerModeChanged;
             UnsubscribeFromKeyDownEvents();
 
             // ReSharper disable once UseNullPropagation
