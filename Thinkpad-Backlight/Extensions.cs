@@ -20,6 +20,8 @@ along with Thinkpad-Backlight.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
+using Thinkpad_Backlight.Properties;
 
 namespace Thinkpad_Backlight
 {
@@ -30,8 +32,12 @@ namespace Thinkpad_Backlight
             if (timer == null)
                 throw new ArgumentNullException(nameof(timer));
 
-            timer.Stop();
-            timer.Start();
+            if (Settings.Default.Timer)
+            {
+                MessageBox.Show("Timer reset");
+                timer.Stop();
+                timer.Start();
+            }
         }
 
         public static MethodInfo GetRuntimeMethodsExt(this Type type, string name, params Type[] types)

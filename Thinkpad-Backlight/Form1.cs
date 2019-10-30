@@ -116,6 +116,7 @@ namespace Thinkpad_Backlight
                 {
                     timerMenuItem.Checked = true;
                     Settings.Default.Timer = true;
+                    timer1.Stop();
                     timer1.Start();
                 }
 
@@ -156,10 +157,7 @@ namespace Thinkpad_Backlight
             if (e.KeyCode != Keys.None /* issue 1 */)
                 _keyboardController.ToggleBacklight(allowInTerminalServerSession: false);
 
-            if (Settings.Default.Timer)
-            {
-                timer1.Reset();
-            }
+            timer1.Reset();
         }
 
         private void UnsubscribeFromKeyDownEvents()
