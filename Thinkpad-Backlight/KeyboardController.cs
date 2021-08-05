@@ -50,15 +50,19 @@ namespace Thinkpad_Backlight
             _getKeyboardBackLightStatusInfo = keyboardControlType.GetRuntimeMethodsExt("GetKeyboardBackLightStatus");
 
             _setKeyboardBackLightStatusFunc = level =>
-            { 
-                var arguments = new object[] { level };
+            {
+                var argumentCount = _setKeyboardBackLightStatusInfo.GetParameters().Count();
+                var arguments = new object[argumentCount];
+                arguments[0] = level;
                 return (uint)_setKeyboardBackLightStatusInfo.Invoke(keyboardControlInstance, arguments);
             };
 
             _getKeyboardBackLightStatusFunc = (out int level) =>
             {
                 level = -1;
-                var arguments = new object[] { level };
+                var argumentCount = _getKeyboardBackLightStatusInfo.GetParameters().Count();
+                var arguments = new object[argumentCount];
+                arguments[0] = level;
                 uint r = (uint)_getKeyboardBackLightStatusInfo.Invoke(keyboardControlInstance, arguments);
                 level = (int)arguments[0];
                 return r;
